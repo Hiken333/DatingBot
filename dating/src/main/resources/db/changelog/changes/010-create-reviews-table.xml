@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.20.xsd">
+
+    <changeSet id="10" author="buhlo">
+        <createTable tableName="reviews">
+            <column name="id" type="BIGSERIAL" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="reviewer_id" type="BIGINT">
+                <constraints nullable="false" foreignKeyName="fk_review_reviewer" 
+                    references="users(id)" deleteCascade="false"/>
+            </column>
+            <column name="reviewed_user_id" type="BIGINT">
+                <constraints nullable="false" foreignKeyName="fk_review_reviewed" 
+                    references="users(id)" deleteCascade="false"/>
+            </column>
+            <column name="rating" type="INTEGER">
+                <constraints nullable="false"/>
+            </column>
+            <column name="comment" type="VARCHAR(1000)"/>
+            <column name="was_meeting" type="BOOLEAN" defaultValueBoolean="false">
+                <constraints nullable="false"/>
+            </column>
+            <column name="created_at" type="TIMESTAMP" defaultValueComputed="CURRENT_TIMESTAMP">
+                <constraints nullable="false"/>
+            </column>
+            <column name="updated_at" type="TIMESTAMP" defaultValueComputed="CURRENT_TIMESTAMP">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <addUniqueConstraint 
+            tableName="reviews"
+            columnNames="reviewer_id, reviewed_user_id"
+            constraintName="uk_review_users"/>
+
+        <createIndex tableName="reviews" indexName="idx_review_reviewer">
+            <column name="reviewer_id"/>
+        </createIndex>
+
+        <createIndex tableName="reviews" indexName="idx_review_reviewed">
+            <column name="reviewed_user_id"/>
+        </createIndex>
+
+        <createIndex tableName="reviews" indexName="idx_review_created">
+            <column name="created_at"/>
+        </createIndex>
+    </changeSet>
+
+</databaseChangeLog>
+

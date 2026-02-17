@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.20.xsd">
+
+    <changeSet id="012-add-version-to-users" author="system">
+        <addColumn tableName="users">
+            <column name="version" type="BIGINT" defaultValueNumeric="0">
+                <constraints nullable="false"/>
+            </column>
+        </addColumn>
+        <rollback>
+            <dropColumn tableName="users" columnName="version"/>
+        </rollback>
+    </changeSet>
+
+    <changeSet id="012-add-version-to-profiles" author="system">
+        <addColumn tableName="profiles">
+            <column name="version" type="BIGINT" defaultValueNumeric="0">
+                <constraints nullable="false"/>
+            </column>
+        </addColumn>
+        <rollback>
+            <dropColumn tableName="profiles" columnName="version"/>
+        </rollback>
+    </changeSet>
+
+    <changeSet id="012-add-version-to-matches" author="system">
+        <addColumn tableName="matches">
+            <column name="version" type="BIGINT" defaultValueNumeric="0">
+                <constraints nullable="false"/>
+            </column>
+        </addColumn>
+        <rollback>
+            <dropColumn tableName="matches" columnName="version"/>
+        </rollback>
+    </changeSet>
+
+    <changeSet id="012-add-version-to-events" author="system">
+        <addColumn tableName="events">
+            <column name="version" type="BIGINT" defaultValueNumeric="0">
+                <constraints nullable="false"/>
+            </column>
+        </addColumn>
+        <rollback>
+            <dropColumn tableName="events" columnName="version"/>
+        </rollback>
+    </changeSet>
+
+    <changeSet id="012-add-comments" author="system">
+        <sql>
+            COMMENT ON COLUMN users.version IS 'Optimistic locking version';
+            COMMENT ON COLUMN profiles.version IS 'Optimistic locking version';
+            COMMENT ON COLUMN matches.version IS 'Optimistic locking version';
+            COMMENT ON COLUMN events.version IS 'Optimistic locking version';
+        </sql>
+        <rollback>
+            <sql>
+                COMMENT ON COLUMN users.version IS NULL;
+                COMMENT ON COLUMN profiles.version IS NULL;
+                COMMENT ON COLUMN matches.version IS NULL;
+                COMMENT ON COLUMN events.version IS NULL;
+            </sql>
+        </rollback>
+    </changeSet>
+
+</databaseChangeLog>
+

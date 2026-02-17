@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.20.xsd">
+
+    <changeSet id="5" author="buhlo">
+        <createTable tableName="matches">
+            <column name="id" type="BIGSERIAL" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="user1_id" type="BIGINT">
+                <constraints nullable="false" foreignKeyName="fk_match_user1" 
+                    references="users(id)" deleteCascade="false"/>
+            </column>
+            <column name="user2_id" type="BIGINT">
+                <constraints nullable="false" foreignKeyName="fk_match_user2" 
+                    references="users(id)" deleteCascade="false"/>
+            </column>
+            <column name="status" type="VARCHAR(50)" defaultValue="ACTIVE">
+                <constraints nullable="false"/>
+            </column>
+            <column name="last_message_at" type="TIMESTAMP"/>
+            <column name="unmatched_by_user_id" type="BIGINT"/>
+            <column name="unmatched_at" type="TIMESTAMP"/>
+            <column name="created_at" type="TIMESTAMP" defaultValueComputed="CURRENT_TIMESTAMP">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <addUniqueConstraint 
+            tableName="matches"
+            columnNames="user1_id, user2_id"
+            constraintName="uk_match_users"/>
+
+        <createIndex tableName="matches" indexName="idx_match_user1">
+            <column name="user1_id"/>
+        </createIndex>
+
+        <createIndex tableName="matches" indexName="idx_match_user2">
+            <column name="user2_id"/>
+        </createIndex>
+
+        <createIndex tableName="matches" indexName="idx_match_created">
+            <column name="created_at"/>
+        </createIndex>
+    </changeSet>
+
+</databaseChangeLog>
+

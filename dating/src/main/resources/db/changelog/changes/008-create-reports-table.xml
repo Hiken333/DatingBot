@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.20.xsd">
+
+    <changeSet id="8" author="buhlo">
+        <createTable tableName="reports">
+            <column name="id" type="BIGSERIAL" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="reporter_id" type="BIGINT">
+                <constraints nullable="false" foreignKeyName="fk_report_reporter" 
+                    references="users(id)" deleteCascade="false"/>
+            </column>
+            <column name="reported_id" type="BIGINT">
+                <constraints nullable="false" foreignKeyName="fk_report_reported" 
+                    references="users(id)" deleteCascade="false"/>
+            </column>
+            <column name="reason" type="VARCHAR(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="description" type="VARCHAR(1000)"/>
+            <column name="status" type="VARCHAR(50)" defaultValue="PENDING">
+                <constraints nullable="false"/>
+            </column>
+            <column name="reviewed_by_id" type="BIGINT"/>
+            <column name="reviewed_at" type="TIMESTAMP"/>
+            <column name="moderator_notes" type="VARCHAR(1000)"/>
+            <column name="created_at" type="TIMESTAMP" defaultValueComputed="CURRENT_TIMESTAMP">
+                <constraints nullable="false"/>
+            </column>
+            <column name="updated_at" type="TIMESTAMP" defaultValueComputed="CURRENT_TIMESTAMP">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <createIndex tableName="reports" indexName="idx_report_reporter">
+            <column name="reporter_id"/>
+        </createIndex>
+
+        <createIndex tableName="reports" indexName="idx_report_reported">
+            <column name="reported_id"/>
+        </createIndex>
+
+        <createIndex tableName="reports" indexName="idx_report_status">
+            <column name="status"/>
+        </createIndex>
+
+        <createIndex tableName="reports" indexName="idx_report_created">
+            <column name="created_at"/>
+        </createIndex>
+
+        <!-- Event requests table -->
+        <createTable tableName="event_requests">
+            <column name="id" type="BIGSERIAL" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="event_id" type="BIGINT">
+                <constraints nullable="false" foreignKeyName="fk_request_event" 
+                    references="events(id)" deleteCascade="true"/>
+            </column>
+            <column name="user_id" type="BIGINT">
+                <constraints nullable="false" foreignKeyName="fk_request_user" 
+                    references="users(id)" deleteCascade="false"/>
+            </column>
+            <column name="message" type="VARCHAR(500)"/>
+            <column name="status" type="VARCHAR(50)" defaultValue="PENDING">
+                <constraints nullable="false"/>
+            </column>
+            <column name="reviewed_by_id" type="BIGINT"/>
+            <column name="reviewed_at" type="TIMESTAMP"/>
+            <column name="created_at" type="TIMESTAMP" defaultValueComputed="CURRENT_TIMESTAMP">
+                <constraints nullable="false"/>
+            </column>
+            <column name="updated_at" type="TIMESTAMP" defaultValueComputed="CURRENT_TIMESTAMP">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <addUniqueConstraint 
+            tableName="event_requests"
+            columnNames="event_id, user_id"
+            constraintName="uk_event_user"/>
+
+        <createIndex tableName="event_requests" indexName="idx_request_event">
+            <column name="event_id"/>
+        </createIndex>
+
+        <createIndex tableName="event_requests" indexName="idx_request_user">
+            <column name="user_id"/>
+        </createIndex>
+
+        <createIndex tableName="event_requests" indexName="idx_request_status">
+            <column name="status"/>
+        </createIndex>
+    </changeSet>
+
+</databaseChangeLog>
+

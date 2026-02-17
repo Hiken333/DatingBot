@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.20.xsd">
+
+    <changeSet id="7" author="buhlo">
+        <createTable tableName="events">
+            <column name="id" type="BIGSERIAL" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="organizer_id" type="BIGINT">
+                <constraints nullable="false" foreignKeyName="fk_event_organizer" 
+                    references="users(id)" deleteCascade="false"/>
+            </column>
+            <column name="title" type="VARCHAR(200)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="description" type="VARCHAR(2000)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="location" type="geometry(Point,4326)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="location_name" type="VARCHAR(200)"/>
+            <column name="city" type="VARCHAR(100)"/>
+            <column name="event_date" type="TIMESTAMP">
+                <constraints nullable="false"/>
+            </column>
+            <column name="max_participants" type="INTEGER" defaultValueNumeric="10">
+                <constraints nullable="false"/>
+            </column>
+            <column name="event_type" type="VARCHAR(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="status" type="VARCHAR(50)" defaultValue="UPCOMING">
+                <constraints nullable="false"/>
+            </column>
+            <column name="is_public" type="BOOLEAN" defaultValueBoolean="true">
+                <constraints nullable="false"/>
+            </column>
+            <column name="age_restriction" type="INTEGER"/>
+            <column name="gender_restriction" type="VARCHAR(50)"/>
+            <column name="photo_url" type="VARCHAR(500)"/>
+            <column name="created_at" type="TIMESTAMP" defaultValueComputed="CURRENT_TIMESTAMP">
+                <constraints nullable="false"/>
+            </column>
+            <column name="updated_at" type="TIMESTAMP" defaultValueComputed="CURRENT_TIMESTAMP">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <createIndex tableName="events" indexName="idx_event_organizer">
+            <column name="organizer_id"/>
+        </createIndex>
+
+        <sql>CREATE INDEX idx_event_location ON events USING GIST (location);</sql>
+
+        <createIndex tableName="events" indexName="idx_event_date">
+            <column name="event_date"/>
+        </createIndex>
+
+        <createIndex tableName="events" indexName="idx_event_status">
+            <column name="status"/>
+        </createIndex>
+
+        <!-- Event alcohol types -->
+        <createTable tableName="event_alcohol_types">
+            <column name="event_id" type="BIGINT">
+                <constraints nullable="false" foreignKeyName="fk_event_alcohol" 
+                    references="events(id)" deleteCascade="true"/>
+            </column>
+            <column name="alcohol_type" type="VARCHAR(50)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <!-- Event participants -->
+        <createTable tableName="event_participants">
+            <column name="event_id" type="BIGINT">
+                <constraints nullable="false" foreignKeyName="fk_participant_event" 
+                    references="events(id)" deleteCascade="true"/>
+            </column>
+            <column name="user_id" type="BIGINT">
+                <constraints nullable="false" foreignKeyName="fk_participant_user" 
+                    references="users(id)" deleteCascade="true"/>
+            </column>
+        </createTable>
+
+        <addPrimaryKey 
+            tableName="event_participants" 
+            columnNames="event_id, user_id" 
+            constraintName="pk_event_participants"/>
+    </changeSet>
+
+</databaseChangeLog>
+

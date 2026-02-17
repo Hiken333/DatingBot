@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                            http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.21.xsd">
+
+    <changeSet id="011" author="buhlo">
+        <comment>Create swipe_history table</comment>
+        
+        <createTable tableName="swipe_history">
+            <column name="id" type="BIGINT" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="from_user_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="to_user_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="swipe_type" type="VARCHAR(20)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="created_at" type="TIMESTAMP">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <!-- Foreign key constraints -->
+        <addForeignKeyConstraint
+                baseTableName="swipe_history"
+                baseColumnNames="from_user_id"
+                referencedTableName="users"
+                referencedColumnNames="id"
+                constraintName="fk_swipe_from_user"/>
+
+        <addForeignKeyConstraint
+                baseTableName="swipe_history"
+                baseColumnNames="to_user_id"
+                referencedTableName="users"
+                referencedColumnNames="id"
+                constraintName="fk_swipe_to_user"/>
+
+        <!-- Indexes -->
+        <createIndex tableName="swipe_history" indexName="idx_swipe_from_user">
+            <column name="from_user_id"/>
+        </createIndex>
+
+        <createIndex tableName="swipe_history" indexName="idx_swipe_to_user">
+            <column name="to_user_id"/>
+        </createIndex>
+
+        <createIndex tableName="swipe_history" indexName="idx_swipe_created_at">
+            <column name="created_at"/>
+        </createIndex>
+
+        <createIndex tableName="swipe_history" indexName="idx_swipe_type">
+            <column name="swipe_type"/>
+        </createIndex>
+
+        <!-- Unique constraint -->
+        <addUniqueConstraint
+                tableName="swipe_history"
+                columnNames="from_user_id, to_user_id"
+                constraintName="uk_swipe_from_to"/>
+    </changeSet>
+</databaseChangeLog>

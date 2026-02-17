@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.20.xsd">
+
+    <!-- Enable PostGIS extension -->
+    <changeSet id="1" author="buhlo">
+        <sql>CREATE EXTENSION IF NOT EXISTS postgis;</sql>
+    </changeSet>
+
+    <!-- Create users table -->
+    <changeSet id="2" author="buhlo">
+        <createTable tableName="users">
+            <column name="id" type="BIGSERIAL" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="telegram_id" type="BIGINT">
+                <constraints nullable="false" unique="true"/>
+            </column>
+            <column name="username" type="VARCHAR(100)"/>
+            <column name="first_name" type="VARCHAR(100)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="last_name" type="VARCHAR(100)"/>
+            <column name="birth_date" type="DATE">
+                <constraints nullable="false"/>
+            </column>
+            <column name="gender" type="VARCHAR(20)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="status" type="VARCHAR(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="role" type="VARCHAR(50)" defaultValue="USER">
+                <constraints nullable="false"/>
+            </column>
+            <column name="is_banned" type="BOOLEAN" defaultValueBoolean="false">
+                <constraints nullable="false"/>
+            </column>
+            <column name="ban_reason" type="VARCHAR(500)"/>
+            <column name="report_count" type="INTEGER" defaultValueNumeric="0">
+                <constraints nullable="false"/>
+            </column>
+            <column name="last_active" type="TIMESTAMP"/>
+            <column name="created_at" type="TIMESTAMP" defaultValueComputed="CURRENT_TIMESTAMP">
+                <constraints nullable="false"/>
+            </column>
+            <column name="updated_at" type="TIMESTAMP" defaultValueComputed="CURRENT_TIMESTAMP">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <createIndex tableName="users" indexName="idx_telegram_id">
+            <column name="telegram_id"/>
+        </createIndex>
+        <createIndex tableName="users" indexName="idx_status">
+            <column name="status"/>
+        </createIndex>
+    </changeSet>
+
+    <!-- Create profiles table -->
+    <changeSet id="3" author="buhlo">
+        <createTable tableName="profiles">
+            <column name="id" type="BIGSERIAL" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="user_id" type="BIGINT">
+                <constraints nullable="false" unique="true" 
+                    foreignKeyName="fk_profile_user" references="users(id)" deleteCascade="true"/>
+            </column>
+            <column name="bio" type="VARCHAR(1000)"/>
+            <column name="location" type="geometry(Point,4326)"/>
+            <column name="city" type="VARCHAR(100)"/>
+            <column name="country" type="VARCHAR(100)"/>
+            <column name="location_updated_at" type="TIMESTAMP"/>
+            <column name="drinking_frequency" type="VARCHAR(50)"/>
+            <column name="looking_for" type="VARCHAR(50)"/>
+            <column name="min_age_preference" type="INTEGER"/>
+            <column name="max_age_preference" type="INTEGER"/>
+            <column name="gender_preference" type="VARCHAR(50)"/>
+            <column name="max_distance_km" type="INTEGER" defaultValueNumeric="10"/>
+            <column name="is_visible" type="BOOLEAN" defaultValueBoolean="true">
+                <constraints nullable="false"/>
+            </column>
+            <column name="show_distance" type="BOOLEAN" defaultValueBoolean="true">
+                <constraints nullable="false"/>
+            </column>
+            <column name="show_age" type="BOOLEAN" defaultValueBoolean="true">
+                <constraints nullable="false"/>
+            </column>
+            <column name="profile_completed" type="BOOLEAN" defaultValueBoolean="false">
+                <constraints nullable="false"/>
+            </column>
+            <column name="rating" type="DOUBLE PRECISION" defaultValueNumeric="5.0">
+                <constraints nullable="false"/>
+            </column>
+            <column name="rating_count" type="INTEGER" defaultValueNumeric="0">
+                <constraints nullable="false"/>
+            </column>
+            <column name="created_at" type="TIMESTAMP" defaultValueComputed="CURRENT_TIMESTAMP">
+                <constraints nullable="false"/>
+            </column>
+            <column name="updated_at" type="TIMESTAMP" defaultValueComputed="CURRENT_TIMESTAMP">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <sql>CREATE INDEX idx_profile_location ON profiles USING GIST (location);</sql>
+        <createIndex tableName="profiles" indexName="idx_profile_visible">
+            <column name="is_visible"/>
+        </createIndex>
+    </changeSet>
+
+    <!-- Additional tables will be added in separate changesets -->
+    <include file="db/changelog/changes/004-create-likes-table.xml"/>
+    <include file="db/changelog/changes/005-create-matches-table.xml"/>
+    <include file="db/changelog/changes/006-create-messages-table.xml"/>
+    <include file="db/changelog/changes/007-create-events-table.xml"/>
+    <include file="db/changelog/changes/008-create-reports-table.xml"/>
+    <include file="db/changelog/changes/009-create-notifications-table.xml"/>
+    <include file="db/changelog/changes/010-create-reviews-table.xml"/>
+    <include file="db/changelog/changes/011-create-swipe-history-table.xml"/>
+    <include file="db/changelog/changes/012-add-version-columns.xml"/>
+
+</databaseChangeLog>
+
